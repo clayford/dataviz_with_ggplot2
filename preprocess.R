@@ -19,6 +19,6 @@ set.seed(1)
 homes_lst <- lapply(h_lst, function(x)x[sample(nrow(x), round(0.10*nrow(x))),])
 
 homes2 <- do.call(rbind, homes_lst)
-write.csv(homes, file = 'alb_homes.csv', row.names = FALSE)
+write.csv(homes2, file = 'alb_homes.csv', row.names = FALSE)
 
 

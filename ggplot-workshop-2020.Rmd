@@ -27,10 +27,10 @@ Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by press
 
 ## Import data
 
-Let's import some data which we'll visualize today. The data we'll work with is Albemarle County real estate data which was downloaded from the Office of Geographic Data Services.
+Let's import some data which we'll visualize today. The data we'll work with is Albemarle County real estate data which was downloaded from the Office of Geographic Data Services. We'll use a random sample of the data.
 
 ```{r}
-URL <- 'https://raw.githubusercontent.com/clayford/dataviz_with_ggplot2/master/homes.csv'
+URL <- 'https://raw.githubusercontent.com/clayford/dataviz_with_ggplot2/master/alb_homes.csv'
 homes <- read.csv(file = URL)
 ```
 
@@ -277,7 +277,7 @@ ggplot(homes) +
 ```
 
 
-The large number of Average homes makes it difficult to see the counts for the other categories. An alternative approach is to view the proportion of homes with and without central air within each condition. We can do this setting the position argument to "fill".
+The large number of Average homes makes it difficult to see the counts for the other categories. An alternative approach is to view the proportion of homes with and without central air within each condition. We can do this by setting the position argument to "fill".
 
 ```{r}
 ggplot(homes) +
