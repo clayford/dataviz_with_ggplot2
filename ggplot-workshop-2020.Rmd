@@ -30,7 +30,8 @@ Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by press
 Let's import some data which we'll visualize today. The data we'll work with is Albemarle County real estate data which was downloaded from the Office of Geographic Data Services.
 
 ```{r}
-homes <- read.csv(file = 'homes.csv')
+URL <- 'https://raw.githubusercontent.com/clayford/dataviz_with_ggplot2/master/homes.csv'
+homes <- read.csv(file = URL)
 ```
 
 Let's look at the first few rows:
@@ -97,7 +98,7 @@ This says "create a plot with points in a plane, where the x attribute of the po
 
 ## Exercise 1
 
-Create a scatterplot of finsqft (y-axis ) versus age (x-axis). Are younger (more recently built houses) bigger than older homes? Insert a new code chunk by pressing *Ctrl+Alt+I* (Win/Linux) or *Cmd+Option+I* (Mac).  
+Create a scatterplot of finsqft (y-axis ) versus age (x-axis). Are younger (more recently built houses) bigger than older homes? Reminder: Insert a new code chunk by pressing *Ctrl+Alt+I* (Win/Linux) or *Cmd+Option+I* (Mac).  
 
 ```{r}
 ggplot(homes, aes(x = age, y = finsqft)) + 
@@ -122,12 +123,12 @@ We can also map the size of the points to a variable, such as lotsize.
 
 ```{r}
 ggplot(homes) +
-  aes(x = finsqft, y = totalvalue, color = cooling, size = lotsize) +
+  aes(x = finsqft, y = totalvalue, shape = cooling, size = lotsize) +
   geom_point()
 
 ```
 
-Perhaps we prefer to see separate scatterplots for each cooling category. We can acheive that with *facets*. The function to use is `facet_wrap()` with the variable that we want to facet on. In this case it's cooling. Notice we precede the variable with a tilde ~.  
+Perhaps we prefer to see separate scatterplots for each cooling category. We can achieve that with *facets*. The function to use is `facet_wrap()` with the variable that we want to facet on. In this case it's cooling. Notice we precede the variable with a tilde ~. We can read that as "facet by cooling"  
 
 ```{r}
 ggplot(homes) +
@@ -165,9 +166,11 @@ ggplot(homes) +
 
 The totalvalue and lotsize variables are very skewed. That is, some values are an order of magnitude larger than the rest of the values. For example, a 5 million dollar home is one order of magnitude larger than a $500,000 home. Displaying the larger values forces the smaller values into clumps. 
 
-When visualizing skewed data, we have two options: 
+Two common approaches to visualizing skewed data: 
 1. zoom in on the data
-2. transform the data with a log transformation
+2. transform the data (for example, with a log transformation)
+
+### Zooming in on data
 
 To zoom in on data with ggplot2, we use the `coord_cartesion()` function and define the limits to view with the xlim and ylim arguments. Below we zoom in on the y-axis only.
 
@@ -175,8 +178,11 @@ To zoom in on data with ggplot2, we use the `coord_cartesion()` function and def
 ggplot(homes) +
   aes(x = finsqft, y = totalvalue) +
   geom_point() +
-  coord_cartesian(ylim = c(0, 1e6))
+  geom_smooth() +
+  coord_cartesian(ylim = c(0, 1e6)) # from 0 to $1,000,000
 ```
+
+### Transforming data
 
 Another approach is to transform the data. An easy transformation is a log10 transformation. With a log10 transformation, 1,000,000 becomes 6 and and 100,000 becomes 5. This has the effect of bringing the big values closer to the smaller values, and spreading out the clumps of smaller values. 
 
@@ -186,13 +192,14 @@ With ggplot, we can use the `scale_y_log10()` and/or `scale_x_log10()` to transf
 ggplot(homes) +
   aes(x = finsqft, y = totalvalue) +
   geom_point() +
+  geom_smooth() +
   scale_y_log10()
 ```
 
 The numbers are a little hard to read on the y-axis. We can format them as dollar amounts using the labels argument in the `scale_y_log10()` function. To do this we need to load the scales package
 
 ```{r}
-library(scales)
+library(scales) # for the dollar function
 ggplot(homes) +
   aes(x = finsqft, y = totalvalue) +
   geom_point() +
@@ -201,19 +208,81 @@ ggplot(homes) +
 
 ```
 
+The larger values are now "closer" to the smaller values, but the relationship appears less dramatic.
+
+
 ## Exercise 3
 
-Modify your code from Exercise 2 to log10 transform the data on both the x and y axes. What do you make of the warning messages?
+Modify your code from Exercise 2 to log10 transform the data on the y axis and zoom in on the x-axis to view homes on lots size 0 to 10 acres. 
 
 ```{r}
 ggplot(homes) +
   aes(x = lotsize, y = totalvalue) +
   geom_point() +
   geom_smooth() +
-  scale_x_log10() +
   scale_y_log10(label=dollar) +
+  coord_cartesian(xlim = c(0,10)) +
   facet_wrap(~ hsdistrict)
 
 ```
 
+## Visualizing counts
+
+Recall the condition variable. We can quickly get counts of each condition using the table function:
+
+```{r}
+table(homes$condition)
+```
+
+One way to visualize counts is with a bar plot. We can create a bar plot in ggplot2 with `geom_bar()`. Notice it automatically generates the counts for us.
+
+```{r}
+ggplot(homes) +
+  aes(x = condition) +
+  geom_bar()
+```
+
+If we want the x-axis ordered according to condition, it's best to define that ordering in the data frame. We can use the `factor` function to achieve this.
+
+```{r}
+homes$condition <- factor(homes$condition, 
+                          levels = c('Substandard', 'Poor', 'Fair', 
+                                     'Average', 'Good', 'Excellent'))
+```
+
+Now when we generate the bar plot, the x-axis in the order as defined in the data frame.
+
+```{r}
+ggplot(homes) +
+  aes(x = condition) +
+  geom_bar()
+```
+
+One of the aesthetics of bars is their fill color. We can map a variable from our data frame to the fill aesthetic. For example, let's see counts of conditions for homes with and without central air (cooling).
+
+```{r}
+ggplot(homes) +
+  aes(x = condition, fill = cooling) +
+  geom_bar()
+
+```
+
+The default result is to stack the bars. We can set them side-by-side setting the position argument to "dodge".
+
+```{r}
+ggplot(homes) +
+  aes(x = condition, fill = cooling) +
+  geom_bar(position = "dodge")
+
+```
+
+
+The large number of Average homes makes it difficult to see the counts for the other categories. An alternative approach is to view the proportion of homes with and without central air within each condition. We can do this setting the position argument to "fill".
+
+```{r}
+ggplot(homes) +
+  aes(x = condition, fill = cooling) +
+  geom_bar(position = "fill")
+
+```
 
