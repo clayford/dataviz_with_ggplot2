@@ -281,12 +281,13 @@ Create a bar plot of condition (condition on x-axis), filled by hsdistrict. Set 
 
 
 
-## References for going further
+## References 
 
-- ggplot2 cheat sheet: https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf 
+* Wickham, H. (2016), _ggplot2: Elegant Graphics for Data Analysis_ (2nd ed), Springer. [https://ggplot2-book.org/](https://ggplot2-book.org/) 
 
-- online version of work-in-progress 3rd edition of *ggplot2: elegant graphics for data analysis*: https://ggplot2-book.org/
+* Wickham, H. and Grolemund G. (2017), _R for Data Science_. O'Reilly. [http://r4ds.had.co.nz/](http://r4ds.had.co.nz/)
 
-- Hundreds of charts with reproducible code: https://www.r-graph-gallery.com/
+**ggplot2 cheat sheet**    
+https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf
 
 
