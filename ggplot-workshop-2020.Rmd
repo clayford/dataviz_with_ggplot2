@@ -1,5 +1,6 @@
 ---
 title: "Data Visualization in R with ggplot2"
+author: "Clay Ford, Statistical Research Consultant, UVA Library"
 output: html_notebook
 editor_options: 
   chunk_output_type: inline
@@ -7,27 +8,34 @@ editor_options:
 
 ## Quick Intro to R Notebooks and R Markdown
 
-This is an R Markdown Notebook. When you execute code within the notebook, the results appear beneath the code. 
+This is an R Markdown Notebook. It combines markdown, a plain text formatting syntax, and R code. When you execute R code within the notebook, the output appears beneath the code. 
 
-This file was created by going to File...New File...R Notebook.
+This file was created in RStudio by going to File...New File...R Notebook.
+
+R code needs to be in "chunks" for it to work. Below is an example of an R code chunk.
 
 Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter* (Win/Linux) or *Cmd+Shift+Return* (Mac). 
 
 ```{r}
-summary(cars$speed)
-hist(cars$speed)
+summary(cars)
+plot(cars$speed, cars$dist)
 ```
 
-To hide the output, click the Expand/Collapse output button. To clear results, click the "x". 
+To hide the output, click the Expand/Collapse output button. To clear results (or an error), click the "x". 
 
 You can also press *Ctrl+Enter* (Win/Linux) or *Cmd+Return* (Mac) to run one line of code at a time (instead of the entire chunk).
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I* (Win/Linux) or *Cmd+Option+I* (Mac).  
+Add a new R code chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I* (Win/Linux) or *Cmd+Option+I* (Mac).  
+
+## Exercise 0 (code along)
+
+Insert a new R code chunk below and type/run the code: 22/7
+
 
 
 ## Import data
 
-Let's import some data which we'll visualize today. The data we'll work with is Albemarle County real estate data which was downloaded from the Office of Geographic Data Services. We'll use a random sample of the data.
+Let's import some data which we'll visualize today using ggplot2. The data we'll work with is Albemarle County real estate data which was downloaded from the Office of Geographic Data Services. We'll use a random sample of the data.
 
 ```{r}
 URL <- 'https://raw.githubusercontent.com/clayford/dataviz_with_ggplot2/master/alb_homes.csv'
@@ -65,17 +73,9 @@ The ggplot2 package implements *The Grammar of Graphics* as defined in the book 
 
 It requires your data be in a data frame or tibble.
 
-The basic idea:
-- use `ggplot` function to create a plotting area for a data frame
-- use `aes` function to map variables in data frame to aesthetic properties of geometric shapes
-- use`geom_` functions to specify the geometric shapes
-- combine these functions with `+`
+Let's do a quick example: Plot totalvalue versus finsqft to create a scatter plot. How does the total value of a home relate to its size in finished square feet?
 
-An example will hopefully make this clear.
-
-Plot totalvalue versus finsqft to create a scatter plot. How does the total value of a home relate to its size in finished square feet?
-
-First we need to load the ggplot2 package. Only do this once per R session
+First we need to load the ggplot2 package. Only do this once per R session.
 
 ```{r}
 # install.packages('ggplot2')
@@ -87,36 +87,37 @@ ggplot(homes) +
 
 Don't forget the parentheses on `geom_point()`! 
 
-We can also nest the `aes` function in the `ggplot` function:
+What just happened?
+
+- The `ggplot` function creates a plotting area for a data frame
+- The `aes` function map variables in the data frame to aesthetic properties of geometric shapes
+- The `geom_point` function specifies we want to use points
+- combine these functions with `+`
+
+NOTE: We can also nest the `aes` function in the `ggplot` function:
 
 ```{r}
 ggplot(homes, aes(x = finsqft, y = totalvalue)) +
   geom_point()
 ```
 
-This says "create a plot with points in a plane, where the x attribute of the points is mapped to finsqft and the y attribute of the points is mapped to totalvalue."
 
-## Exercise 1
 
-Create a scatterplot of finsqft (y-axis ) versus age (x-axis). Are younger (more recently built houses) bigger than older homes? Reminder: Insert a new code chunk by pressing *Ctrl+Alt+I* (Win/Linux) or *Cmd+Option+I* (Mac).  
+## Exercise 1 (code along)
 
-```{r}
-ggplot(homes, aes(x = age, y = finsqft)) + 
-  geom_point()
-
-```
+Create a scatterplot of finsqft (y-axis) versus age (x-axis). Do younger (more recently built) houses have a tendency to be bigger than older houses? Reminder: Insert a new code chunk by pressing *Ctrl+Alt+I* (Win/Linux) or *Cmd+Option+I* (Mac). Try entering alpha = 1/5 in `geom_point()`. What does it do?
 
 
 ## More aesthetics
 
 Points not only have positions in a plane, but can be different sizes and have different shapes and colors. We can map variables in our data frame to these aesthetics. 
 
-Plot totalvalue versus finsqft to create a scatter plot, but also color the points according to whether or not the homes have central air (cooling)
+Plot totalvalue versus finsqft to create a scatter plot, but also color the points according to whether or not the homes have central air (cooling). How does the relationship between totalvalue and finsqft differ between homes with and without central air?
 
 ```{r}
 ggplot(homes) +
   aes(x = finsqft, y = totalvalue, color = cooling) +
-  geom_point()
+  geom_point() 
 ```
 
 We can also map the size of the points to a variable, such as lotsize.
@@ -128,12 +129,12 @@ ggplot(homes) +
 
 ```
 
-Perhaps we prefer to see separate scatterplots for each cooling category. We can achieve that with *facets*. The function to use is `facet_wrap()` with the variable that we want to facet on. In this case it's cooling. Notice we precede the variable with a tilde ~. We can read that as "facet by cooling"  
+Notice the overplotting. Perhaps we prefer to see separate scatterplots for each cooling category. We can achieve that with *facets*. The function to use is `facet_wrap()` with the variable that we want to facet on. In this case it's cooling. Notice we precede the variable with a tilde ~. We can read that as "facet by cooling"  
 
 ```{r}
 ggplot(homes) +
   aes(x = finsqft, y = totalvalue, size = lotsize) +
-  geom_point() +
+  geom_point(alpha = 1/2) +
   facet_wrap(~ cooling)
 
 ```
@@ -143,7 +144,7 @@ We can also have multiple geoms in a plot. Let's say we want to add a smooth tre
 ```{r}
 ggplot(homes) +
   aes(x = finsqft, y = totalvalue) +
-  geom_point() +
+  geom_point(alpha = 1/2) +
   geom_smooth() +
   facet_wrap(~ cooling)
 
@@ -153,50 +154,25 @@ ggplot(homes) +
 
 Create a scatterplot of totalvalue (y-axis) vs lotsize (x-axis), faceted by hsdistrict. Add smooth trend lines to summarize the relationship.
 
-```{r}
-ggplot(homes) +
-  aes(x = lotsize, y = totalvalue) +
-  geom_point() +
-  geom_smooth() +
-  facet_wrap(~ hsdistrict)
-```
 
-
-## Zooming in and transforming data
-
-The totalvalue and lotsize variables are very skewed. That is, some values are an order of magnitude larger than the rest of the values. For example, a 5 million dollar home is one order of magnitude larger than a $500,000 home. Displaying the larger values forces the smaller values into clumps. 
-
-Two common approaches to visualizing skewed data: 
-1. zoom in on the data
-2. transform the data (for example, with a log transformation)
 
 ### Zooming in on data
 
-To zoom in on data with ggplot2, we use the `coord_cartesion()` function and define the limits to view with the xlim and ylim arguments. Below we zoom in on the y-axis only.
+Albemarle county has homes with very large totalvalue and lotsize values. Including them in our plots means we "zoom out" to accommodate them which means we're "far away" from the majority of homes.  
+
+To zoom in on data with ggplot2, we use the `coord_cartesion()` function and define the limits to view with the `xlim` and `ylim` arguments. Below we zoom in on the y-axis only.
 
 ```{r}
 ggplot(homes) +
   aes(x = finsqft, y = totalvalue) +
   geom_point() +
-  geom_smooth() +
-  coord_cartesian(ylim = c(0, 1e6)) # from 0 to $1,000,000
+  geom_smooth() + 
+  coord_cartesian(ylim = c(0, 2e6)) # from 0 to $2,000,000
+
 ```
 
-### Transforming data
 
-Another approach is to transform the data. An easy transformation is a log10 transformation. With a log10 transformation, 1,000,000 becomes 6 and and 100,000 becomes 5. This has the effect of bringing the big values closer to the smaller values, and spreading out the clumps of smaller values. 
-
-With ggplot, we can use the `scale_y_log10()` and/or `scale_x_log10()` to transform the data. Below we transform the y-axis. Notice the y-axis is still labeled in dollars, but the plot is displaying log10-transformed values.
-
-```{r}
-ggplot(homes) +
-  aes(x = finsqft, y = totalvalue) +
-  geom_point() +
-  geom_smooth() +
-  scale_y_log10()
-```
-
-The numbers are a little hard to read on the y-axis. We can format them as dollar amounts using the labels argument in the `scale_y_log10()` function. To do this we need to load the scales package
+The numbers are a little hard to read on the y-axis. We can format them as dollar amounts using the labels argument in the `scale_y_continuous()` function. To do this we need to load the scales package, which is installed when you install the ggplot2 package. 
 
 ```{r}
 library(scales) # for the dollar function
@@ -204,25 +180,23 @@ ggplot(homes) +
   aes(x = finsqft, y = totalvalue) +
   geom_point() +
   geom_smooth() +
-  scale_y_log10(labels=dollar) 
+  coord_cartesian(ylim = c(0, 2e6)) + 
+  scale_y_continuous(labels=dollar) 
 
 ```
 
-The larger values are now "closer" to the smaller values, but the relationship appears less dramatic.
 
 
 ## Exercise 3
 
-Modify your code from Exercise 2 to log10 transform the data on the y axis and zoom in on the x-axis to view homes on lots size 0 to 10 acres. 
+Modify your code from Exercise 2 to zoom in on the y-axis to see home prices ranging from 0 to $1,000,000, and zoom in on the x-axis to view homes on lots ranging in size from 0 to 5 acres. Also use the dollar function to format the home prices on the y-axis.
 
 ```{r}
 ggplot(homes) +
   aes(x = lotsize, y = totalvalue) +
   geom_point() +
   geom_smooth() +
-  scale_y_log10(label=dollar) +
-  coord_cartesian(xlim = c(0,10)) +
-  facet_wrap(~ hsdistrict)
+  facet_wrap(~ hsdistrict) 
 
 ```
 
@@ -285,4 +259,34 @@ ggplot(homes) +
   geom_bar(position = "fill")
 
 ```
+
+The y-axis now represents proportion. 100% of substandard homes have no central air.
+
+## Exercise 4
+
+Create a bar plot of condition (condition on x-axis), filled by hsdistrict. Set position = 'fill' so we visualize within each condition the proportion belonging to a high school district.
+
+
+
+
+## Continuous vs group (boxplots, violin plot, etc)
+
+...
+
+
+
+## Line plots over time
+
+...
+
+
+
+## References for going further
+
+- ggplot2 cheat sheet: https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf 
+
+- online version of work-in-progress 3rd edition of *ggplot2: elegant graphics for data analysis*: https://ggplot2-book.org/
+
+- Hundreds of charts with reproducible code: https://www.r-graph-gallery.com/
+
 
