@@ -110,8 +110,6 @@ Obviously it can get much more complicated. But for exploratory visualization th
 
 Do younger (more recently built) houses have a tendency to be bigger than older houses? Create a scatterplot of finsqft (y-axis) versus age (x-axis). Reminder: Insert a new code chunk by pressing *Ctrl+Alt+I* (Win/Linux) or *Cmd+Option+I* (Mac). Try entering alpha = 1/5 in `geom_point()`. What does it do?
 
-
-
 ## More aesthetics and facets
 
 Points not only have positions in a plane, but can be different sizes and have different shapes and colors. We can map variables in our data frame to these aesthetics. 
@@ -152,9 +150,10 @@ ggplot(homes) +
   aes(x = finsqft, y = totalvalue) +
   geom_point(alpha = 1/2) +
   geom_smooth() +
-  facet_wrap(~ cooling)
+  facet_wrap(~ cooling) 
 
 ```
+
 
 ## Exercise 2
 
