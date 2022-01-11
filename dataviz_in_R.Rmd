@@ -89,7 +89,7 @@ ggplot(homes) +
 What just happened?
 
 - The `ggplot` function creates a plotting area for a data frame
-- The `aes` function map variables in the data frame to aesthetic properties of geometric shapes
+- The `aes` function maps variables in the data frame to aesthetic properties of geometric shapes
 - The `geom_point` function specifies we want to use points
 - combine these functions with `+`
 
