@@ -108,7 +108,13 @@ Obviously it can get much more complicated. But for exploratory visualization th
 
 ## Exercise 1 (code along)
 
-Do younger (more recently built) homes have a tendency to be bigger than older homes? Create a scatterplot of finsqft (y-axis) versus age (x-axis). Reminder: Insert a new code chunk by pressing *Ctrl+Alt+I* (Win/Linux) or *Cmd+Option+I* (Mac). Try entering alpha = 1/5 in `geom_point()`. What does it do?
+Do younger (more recently built) homes have a tendency to be bigger than older homes? Create a scatterplot of finsqft (y-axis) versus age (x-axis). Reminder: Insert a new code chunk by pressing *Ctrl+Alt+I* (Win/Linux) or *Cmd+Option+I* (Mac). Try entering `alpha = 1/5` in `geom_point()`. What does it do?
+
+```{r}
+ggplot(homes) +
+  aes(x = age, y = finsqft) +
+  geom_point(alpha = 1/5)
+```
 
 
 
@@ -119,7 +125,7 @@ Points not only have positions in a plane, but can be different sizes and have d
 
 How does the relationship between totalvalue and finsqft differ between homes with and without central air?
 
-Plot totalvalue versus finsqft to create a scatter plot, but also color the points according to whether or not the homes have central air (cooling). Notice we add `color = cooling` to the `aes()` function below: 
+Plot totalvalue versus finsqft to create a scatter plot, but also *color* the points according to whether or not the homes have central air (cooling). Notice we add `color = cooling` to the `aes()` function below: 
 
 ```{r}
 ggplot(homes) +
@@ -127,7 +133,7 @@ ggplot(homes) +
   geom_point() 
 ```
 
-We can also map the size of the points to a variable, such as lotsize. Notice I have mapped the shape of the point to cooling using the argument `size = lotsize`.
+We can also map the *size* of the points to a variable, such as lotsize. Notice I have mapped the *shape* of the point to cooling using the argument `size = lotsize`.
 
 ```{r}
 ggplot(homes) +
@@ -164,6 +170,14 @@ How is totalvalue related to lotsize within each of the three high school distri
 
 Create a scatterplot of totalvalue (y-axis) vs lotsize (x-axis), faceted by hsdistrict. Add smooth trend lines to summarize the relationship.
 
+
+```{r}
+ggplot(homes) +
+  aes(x = lotsize, y = totalvalue) +
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~hsdistrict)
+```
 
 
 
@@ -207,7 +221,8 @@ ggplot(homes) +
   aes(x = lotsize, y = totalvalue) +
   geom_point() +
   geom_smooth() +
-  facet_wrap(~ hsdistrict)
+  facet_wrap(~ hsdistrict) +
+  coord_cartesian(xlim = c(0,5), ylim = c(0,1e6))
 
 ```
 
@@ -243,7 +258,7 @@ ggplot(homes) +
   geom_bar()
 ```
 
-One of the aesthetics of bars is their fill color. We can map a variable from our data frame to the fill aesthetic. For example, let's see counts of conditions for homes with and without central air (cooling). Notice we add `fill = cooling` to the `aes()` function.
+One of the aesthetics of bars is their fill color. We can map a variable from our data frame to the *fill* aesthetic. For example, let's see counts of conditions for homes with and without central air (cooling). Notice we add `fill = cooling` to the `aes()` function.
 
 ```{r}
 ggplot(homes) +
@@ -267,7 +282,8 @@ The large number of Average homes with central air makes it difficult to see the
 ```{r}
 ggplot(homes) +
   aes(x = condition, fill = cooling) +
-  geom_bar(position = "fill")
+  geom_bar(position = "fill") +
+  ylab("proportion")
 
 ```
 
@@ -277,13 +293,20 @@ The y-axis now represents proportion. 100% of substandard homes have no central 
 
 Given a home's condition, is it more likely to be in a particular high school district? For example, given all the homes in Excellent condition, is there a higher proportion of them in one of the three high school districts?
 
-Create a bar plot of condition (condition on x-axis), filled by hsdistrict. Set position = 'fill' so we can visualize within each condition the proportion belonging to a high school district.
+Create a bar plot of condition (condition on x-axis), filled by hsdistrict. Set `position = 'fill'` so we can visualize within each condition the proportion belonging to a high school district.
+
+
+```{r}
+ggplot(homes) +
+  aes(x = condition, fill = hsdistrict) +
+  geom_bar(position = "fill")
+```
 
 
 
 ## Continuous vs groups
 
-How does the totalvalue of homes differ between elementary school districts? One way to visualize this is with a boxplot. We can do this with `geom_boxplot`.
+How does the totalvalue of homes differ between elementary school districts? One way to visualize this is with a boxplot. We can do this with `geom_boxplot()`.
 
 
 ```{r}
@@ -335,6 +358,13 @@ ggplot(homes) +
 ## Exercise 5
 
 How are the ages of homes distributed between the elementary school districts? Are there some elementary schools that serve mostly newer homes? Create a boxplot of age of home by esdistrict. 
+
+```{r}
+ggplot(homes) +
+  aes(x = esdistrict, y = age) +
+  geom_boxplot() +
+  coord_flip()
+```
 
 
 
@@ -404,11 +434,17 @@ head(homes_mean_fb)
 Create a line plot showing how the mean number of fullbaths has changed over time (yearbuilt). Try adding a smooth trend line using `geom_smooth()`.
 
 
+```{r}
+ggplot(homes_mean_fb) +
+  aes(x = yearbuilt, y = fullbath) +
+  geom_point() +
+  geom_smooth()
+```
 
 
 ## Wrap up
 
-We just covered the basics of ggplot2 today. The way to get better at using ggplot2 is to keep using it and Googling for help when you get stuck. (Seriously)
+We just covered the basics of ggplot2 today. The way to get better at using ggplot2 is to keep using it and Googling for help when you get stuck.
 
 Two more topics worth mentioning:
 
@@ -451,8 +487,6 @@ When working in an R script (as opposed to an Rmd file), plots appear in the Plo
 ## We're done!
 
 If you would like to talk more about ggplot2 or anything else statistics related, I would love to hear from you: `clayford@virginia.edu` or `statlab@virginia.edu`
-
-Want more ggplot2? Google `getting started with ggplot2` or `ggplot2 tutorial`. Also see the numerous examples provided with the ggplot2 documentation.
 
 
 ## References 

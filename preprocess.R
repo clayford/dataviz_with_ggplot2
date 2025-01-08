@@ -1,17 +1,9 @@
-homes <- readRDS('homes.rds')
+homes <- readRDS(url('https://github.com/clayford/albemarle_county_real_estate/raw/refs/heads/main/data/albemarle_homes_2025-01-08.rds'))
 homes$usecode <- NULL
 homes$yearremodeled <- NULL
-homes$remodel <- NULL
-homes$lastsaledate <- NULL
+homes$remodeled <- NULL
+homes$lastsaledate1 <- NULL
 homes$lastsaleprice <- NULL
-homes$improvementsvalue <- NULL
-homes$totalrooms <- NULL
-homes$landvalue <- NULL
-
-saveRDS(homes, file = 'homes.rds')
-write.csv(homes, file = 'homes.csv', row.names = FALSE)
-
-homes <- read.csv(file = 'homes.csv')
 
 # sample 10% from each condition
 h_lst <- split(homes, f = homes$condition)
