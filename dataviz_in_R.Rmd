@@ -50,21 +50,20 @@ head(homes)
 ```
 
 Variable name definitions:
-
-- *yearbuilt*: year house was built
-- *finsqft*: size of house in number square feet
-- *cooling*: 'Central Air' versus 'No Central Air'
-- *bedroom*: number of bedrooms
-- *fullbath*: number of full bathrooms (toilet, sink and bath)
-- *halfbath*: number of half bathrooms (toilet and sink only)
 - *lotsize*: size of land on which home is located, in acres
 - *totalvalue*: total assessed value of home and property
 - *esdistrict*: the elementary school the home feeds into
 - *msdistrict*: the middle school the home feeds into
 - *hsdistrict*: the high school the home feeds into
 - *censustract*: the census tract the home is located in
-- *age*: of the house in years as of 2018
+- *yearbuilt*: year house was built
 - *condition*: assessed condition of home (Substandard, Poor, Fair, Average, Good, Excellent)
+- *finsqft*: size of house in number square feet
+- *cooling*: 'Central Air' versus 'No Central Air'
+- *bedroom*: number of bedrooms
+- *fullbath*: number of full bathrooms (toilet, sink and bath)
+- *age*: of the house in years as of 2025
+- *month_sold*: month the house was last sold
 - *fp*: indicator if house has fireplace (0=no, 1=yes)
 
 
@@ -88,9 +87,9 @@ ggplot(homes) +
 
 What just happened?
 
-- The `ggplot` function creates a plotting area for a data frame
-- The `aes` function maps variables in the data frame to aesthetic properties of geometric shapes
-- The `geom_point` function specifies we want to use points
+- The `ggplot()` function creates a plotting area for a data frame
+- The `aes()` function maps variables in the data frame to aesthetic properties of geometric shapes
+- The `geom_point()` function specifies we want to use points
 - combine these functions with `+`
 
 Don't forget the parentheses on `geom_point()`! 
@@ -130,10 +129,35 @@ Plot totalvalue versus finsqft to create a scatter plot, but also *color* the po
 ```{r}
 ggplot(homes) +
   aes(x = finsqft, y = totalvalue, color = cooling) +
-  geom_point() 
+  geom_point(alpha = 1/3) 
 ```
 
-We can also map the *size* of the points to a variable, such as lotsize. Notice I have mapped the *shape* of the point to cooling using the argument `size = lotsize`.
+You may not like the default colors. To change the colors, we need to change the color *scale*. The easiest way is to use the `scale_color_manual()` function and list the colors in a vector using the `values` argument. To see available colors, type `colors()` in the console. Can also visit <https://r-charts.com/colors/>.
+
+```{r}
+ggplot(homes) +
+  aes(x = finsqft, y = totalvalue, color = cooling) +
+  geom_point() +
+  scale_color_manual(values = c("blue", "red"))
+```
+
+About 4.5% of people are colorblind. To use colorblind-friendly color palettes, we can use the {RColorBrewer} package. To see which palettes are colorblind friendly, use the `display.brewer.all()` function with `colorblindFriendly = TRUE`.
+
+```{r}
+library(RColorBrewer)
+display.brewer.all(colorblindFriendly = TRUE)
+```
+
+To use one of the palettes in {ggplot2}, use the `scale_color_brewer()` function and set the palette using the `palette` argument. For example, here's how we use the 'Set2' palette.
+
+```{r}
+ggplot(homes) +
+  aes(x = finsqft, y = totalvalue, color = cooling) +
+  geom_point() +
+  scale_color_brewer(palette = "Set2")
+```
+
+We can also map the *size* and *shape* of points to variables. Below I map cooling to shape and lotsize to size. 
 
 ```{r}
 ggplot(homes) +
@@ -152,7 +176,7 @@ ggplot(homes) +
 
 ```
 
-We can also have multiple geoms in a plot. Let's say we want to add a *smooth trend line* that summarizes the association between finsqft and totalvalue. We can add `geom_smooth()` to our code:
+We can have multiple geoms in a plot. Let's say we want to add a *smooth trend line* that summarizes the association between finsqft and totalvalue. We can add `geom_smooth()` to our code:
 
 ```{r}
 ggplot(homes) +
@@ -197,7 +221,7 @@ ggplot(homes) +
 ```
 
 
-The numbers are a little hard to read on the y-axis. We can format them as dollar amounts using the labels argument in the `scale_y_continuous()` function. To do this we need to load the scales package, which is installed when you install the ggplot2 package. 
+The numbers are a little hard to read on the y-axis. We can format them as dollar amounts using the `labels` argument in the `scale_y_continuous()` function. To do this we need to load the scales package, which is installed when you install the ggplot2 package. 
 
 ```{r}
 library(scales) # for the dollar function
@@ -246,8 +270,9 @@ If we want the x-axis ordered according to condition, it's best to define that o
 
 ```{r}
 homes$condition <- factor(homes$condition, 
-                          levels = c('Substandard', 'Poor', 'Fair', 
-                                     'Average', 'Good', 'Excellent'))
+                          levels = c('Very Poor', 'Poor', 'Fair', 
+                                     'Average', 'Average Plus', 
+                                     'Good', 'Excellent'))
 ```
 
 Now when we generate the bar plot, the x-axis in the order as defined in the data frame.
@@ -257,6 +282,7 @@ ggplot(homes) +
   aes(x = condition) +
   geom_bar()
 ```
+
 
 One of the aesthetics of bars is their fill color. We can map a variable from our data frame to the *fill* aesthetic. For example, let's see counts of conditions for homes with and without central air (cooling). Notice we add `fill = cooling` to the `aes()` function.
 
@@ -287,7 +313,18 @@ ggplot(homes) +
 
 ```
 
-The y-axis now represents proportion. 100% of substandard homes have no central air.
+The y-axis now represents proportions. 
+
+We can also change the color palette. Notice this time we need to use `scale_fill_brewer` because we're changing the *fill* aesthetic.
+
+```{r}
+ggplot(homes) +
+  aes(x = condition, fill = cooling) +
+  geom_bar(position = "fill") +
+  scale_fill_brewer(palette = "Set2") +
+  ylab("proportion")
+```
+
 
 ## Exercise 4
 
@@ -299,7 +336,8 @@ Create a bar plot of condition (condition on x-axis), filled by hsdistrict. Set 
 ```{r}
 ggplot(homes) +
   aes(x = condition, fill = hsdistrict) +
-  geom_bar(position = "fill")
+  geom_bar(position = "fill") +
+  scale_fill_brewer(palette = "Set2")
 ```
 
 
@@ -409,7 +447,7 @@ We can zoom in and get more detail on the last 90 years. Notice we use the `labs
 ggplot(homes_median_lotsize) +
   aes(x = yearbuilt, y = lotsize) +
   geom_line() +
-  coord_cartesian(xlim = c(1930,2020), ylim = c(0,30)) +
+  coord_cartesian(xlim = c(1930,2020), ylim = c(0,150)) +
   labs(title = "Median Lot Size by Year Built", 
        x = "Year Built", 
        y = "Median Lot Size")
@@ -444,7 +482,7 @@ ggplot(homes_mean_fb) +
 
 ## Wrap up
 
-We just covered the basics of ggplot2 today. The way to get better at using ggplot2 is to keep using it and Googling for help when you get stuck.
+We just covered the basics of ggplot2 today. The way to get better at using ggplot2 is to keep using it and Googling/ask AI for help when you get stuck.
 
 Two more topics worth mentioning:
 
@@ -461,7 +499,7 @@ ggplot(homes) +
   theme_minimal()
 ```
 
-There are whole R packages that provided nothing but more themes for ggplot2. For example, see the `ggthemes` package.
+There are whole R packages that provide nothing but more themes for ggplot2. For example, see the {ggthemes} package.
 
 Saving plots can be done with the `ggsave()` function. By default, it will save the last plot you created as a 7 in. x 7 in. image.
 
@@ -469,17 +507,6 @@ Saving plots can be done with the `ggsave()` function. By default, it will save 
 ggsave("es_lotsize.png")
 ```
 
-`ggsave()` can also be tacked on to the end of ggplot code.
-
-```{r}
-ggplot(homes) +
-  aes(x = esdistrict, y = lotsize) +
-  geom_point(position = position_jitter(width = 0.1, height = 0)) +
-  coord_flip(ylim = c(0,50)) +
-  theme_minimal() +
-  ggsave("es_lotsize.jpeg", width = 20, height = 20, units = "cm")
-
-```
 
 When working in an R script (as opposed to an Rmd file), plots appear in the Plot frame within RStudio which provides a convenient Export button to interactively save plots.
 
@@ -498,4 +525,55 @@ If you would like to talk more about ggplot2 or anything else statistics related
 **ggplot2 cheat sheet**    
 https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf
 
+
+## Appendix
+
+Additional material cut for time.
+
+### Order bar charts by counts
+
+If we want order the x-axis in ascending order by counts, we need to use the `after_stat()` function with an argument of `count` in a call to `aes()` within the `geom_bar()` function, and then use `sort()`.
+
+```{r}
+ggplot(homes) +
+  aes(x = condition) +
+  geom_bar(aes(y = sort(after_stat(count)))) +
+  ylab("count")
+```
+
+To sort in descending order:
+
+```{r}
+ggplot(homes) +
+  aes(x = condition) +
+  geom_bar(aes(y = sort(after_stat(count), decreasing = TRUE))) +
+  ylab("count")
+```
+
+This is made a little easier by working directly with data frames of counts.
+
+```{r}
+count_df <- as.data.frame(xtabs(~ condition, data = homes))
+count_df
+```
+
+Now, instead of using `geom_bar()`, use `geom_col()`. Notice we need to define a `y` aesthetic for the counts. ("Freq" is the default name given to the counts by the `as.data.frame()` function.) Finally use the `reorder()` function to reorder condition by Freq.
+
+```{r}
+ggplot(count_df) +
+  aes(x = reorder(condition, Freq), y = Freq) +
+  geom_col() +
+  xlab("condition")
+
+```
+
+
+To reorder in descending order, set `decreasing = TRUE` in the `reorder()` function.
+
+```{r}
+ggplot(count_df) +
+  aes(x = reorder(condition, Freq, decreasing = TRUE), y = Freq) +
+  geom_col() +
+  xlab("condition")
+```
 
