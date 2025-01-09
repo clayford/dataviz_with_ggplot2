@@ -518,7 +518,7 @@ If you would like to talk more about ggplot2 or anything else statistics related
 
 ## References 
 
-* Wickham, H. (2016), _ggplot2: Elegant Graphics for Data Analysis_ (2nd ed), Springer. [https://ggplot2-book.org/](https://ggplot2-book.org/) 
+* Wickham, H. (2016), _ggplot2: Elegant Graphics for Data Analysis_ (3rd ed), Springer. [https://ggplot2-book.org/](https://ggplot2-book.org/) 
 
 * Wickham, H. and Grolemund G. (2017), _R for Data Science_. O'Reilly. [http://r4ds.had.co.nz/](http://r4ds.had.co.nz/)
 
@@ -575,5 +575,53 @@ ggplot(count_df) +
   aes(x = reorder(condition, Freq, decreasing = TRUE), y = Freq) +
   geom_col() +
   xlab("condition")
+```
+
+### Change default color palette
+
+If you want to change the color palette so you don't have to repeatedly use `scale_color_manual()` or `scale_fill_brewer()` in your code, you can set ggplot2 options using the `options()` function. These steps come from the following Stack Overflow answer: <https://stackoverflow.com/a/68205270/2765195>
+
+Let's say you want to use the "Set2" palette from the {RColorBrewer} package any time you map a categorical variable to a color or fill scale.
+
+```{r}
+opts <- options()  # save old options
+
+# definie new scale functions with your palette of choice
+scale_colour_brewer2 <- function(...) {
+  scale_colour_brewer(..., palette = "Set2")
+}
+
+scale_fill_brewer2 <- function(...) {
+  scale_fill_brewer(..., palette = "Set2")
+}
+
+# set the options
+options(
+  ggplot2.discrete.colour = scale_colour_brewer2,
+  ggplot2.discrete.fill = scale_fill_brewer2
+)
+```
+
+Now the "Set2" color palette is the default palette for the color scale.
+
+```{r}
+ggplot(homes) +
+  aes(x = finsqft, y = totalvalue, color = cooling) +
+  geom_point() 
+
+```
+
+And it's the default palette for the fill scale. 
+
+```{r}
+ggplot(homes) +
+  aes(x = condition, fill = hsdistrict) +
+  geom_bar(position = "fill") 
+```
+
+Run the following line to restore the original default options. Or you can simply restart R.
+
+```{r}
+options(opts)
 ```
 
