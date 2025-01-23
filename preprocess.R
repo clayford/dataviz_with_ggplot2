@@ -5,6 +5,12 @@ homes$remodeled <- NULL
 homes$lastsaledate1 <- NULL
 homes$lastsaleprice <- NULL
 
+vars <- c("totalvalue", "finsqft", "lotsize", "bedroom", "fullbath", 
+          "yearbuilt", "esdistrict", "msdistrict", "hsdistrict", 
+          "censustract", "condition", "cooling", "age", "month_sold", "fp")
+
+homes <- homes[,vars]
+
 # sample 10% from each condition
 h_lst <- split(homes, f = homes$condition)
 set.seed(1)

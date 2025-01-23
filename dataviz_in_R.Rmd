@@ -28,10 +28,9 @@ You can also press *Ctrl+Enter* (Win/Linux) or *Cmd+Return* (Mac) to run one lin
 
 Add a new R code chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I* (Win/Linux) or *Cmd+Option+I* (Mac).  
 
-## Exercise 0 (code along)
+## CODE ALONG 0
 
 Insert a new R code chunk below and type/run the code: 22/7
-
 
 
 ## Import data
