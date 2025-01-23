@@ -49,18 +49,18 @@ head(homes)
 ```
 
 Variable name definitions:
-- *lotsize*: size of land on which home is located, in acres
 - *totalvalue*: total assessed value of home and property
+- *finsqft*: size of house in number square feet
+- *lotsize*: size of land on which home is located, in acres
+- *bedroom*: number of bedrooms
+- *fullbath*: number of full bathrooms (toilet, sink and bath)
+- *yearbuilt*: year house was built
 - *esdistrict*: the elementary school the home feeds into
 - *msdistrict*: the middle school the home feeds into
 - *hsdistrict*: the high school the home feeds into
 - *censustract*: the census tract the home is located in
-- *yearbuilt*: year house was built
 - *condition*: assessed condition of home (Substandard, Poor, Fair, Average, Good, Excellent)
-- *finsqft*: size of house in number square feet
 - *cooling*: 'Central Air' versus 'No Central Air'
-- *bedroom*: number of bedrooms
-- *fullbath*: number of full bathrooms (toilet, sink and bath)
 - *age*: of the house in years as of 2025
 - *month_sold*: month the house was last sold
 - *fp*: indicator if house has fireplace (0=no, 1=yes)
@@ -98,13 +98,21 @@ Don't forget the parentheses on `geom_point()`!
 ```
 ggplot(data) +
   aes() +
-  geom_something()
+  geom_xxxxx()
 ```
 
 Obviously it can get much more complicated. But for exploratory visualization this often sufficient.
 
+It's worth pointing out that many R users place the `aes()` function in the `ggplot()` function, like this:
 
-## Exercise 1 (code along)
+```{r}
+ggplot(homes, aes(x = finsqft, y = totalvalue)) +
+  geom_point()
+```
+
+
+
+## CODE ALONG 1
 
 Do younger (more recently built) homes have a tendency to be bigger than older homes? Create a scatterplot of finsqft (y-axis) versus age (x-axis). Reminder: Insert a new code chunk by pressing *Ctrl+Alt+I* (Win/Linux) or *Cmd+Option+I* (Mac). Try entering `alpha = 1/5` in `geom_point()`. What does it do?
 
@@ -113,8 +121,6 @@ ggplot(homes) +
   aes(x = age, y = finsqft) +
   geom_point(alpha = 1/5)
 ```
-
-
 
 
 ## More aesthetics and facets
@@ -161,8 +167,7 @@ We can also map the *size* and *shape* of points to variables. Below I map cooli
 ```{r}
 ggplot(homes) +
   aes(x = finsqft, y = totalvalue, shape = cooling, size = lotsize) +
-  geom_point()
-
+  geom_point() 
 ```
 
 Notice the overplotting. Perhaps we prefer to see separate scatterplots for each cooling category. We can achieve that with *facets*. The function to use is `facet_wrap()` with the variable that we want to facet on. In this case it's cooling. Notice we precede the variable with a tilde ~. We can read that as "facet by cooling"  
@@ -187,7 +192,7 @@ ggplot(homes) +
 ```
 
 
-## Exercise 2
+## CODE ALONG 2
 
 How is totalvalue related to lotsize within each of the three high school districts (hsdistrict)?
 
@@ -229,13 +234,12 @@ ggplot(homes) +
   geom_point() +
   geom_smooth() +
   coord_cartesian(xlim = c(0, 4000), ylim = c(0, 2e6)) + 
-  scale_y_continuous(labels=dollar) 
+  scale_y_continuous(labels = dollar) 
 
 ```
 
 
-
-## Exercise 3
+## CODE ALONG 3
 
 Modify your code from Exercise 2 to zoom in on the y-axis to see home prices ranging from 0 to $1,000,000, and zoom in on the x-axis to view homes on lots ranging in size from 0 to 5 acres. Also use the dollar function to format the home prices on the y-axis.
 
@@ -245,11 +249,12 @@ ggplot(homes) +
   geom_point() +
   geom_smooth() +
   facet_wrap(~ hsdistrict) +
-  coord_cartesian(xlim = c(0,5), ylim = c(0,1e6))
+  coord_cartesian(xlim = c(0,5), ylim = c(0,1e6)) +
+  scale_y_continuous(labels = dollar)
 
 ```
 
-## Visualizing counts
+### Visualizing counts
 
 Recall the condition variable. We can quickly get counts of each condition using the `table()` function:
 
@@ -325,7 +330,7 @@ ggplot(homes) +
 ```
 
 
-## Exercise 4
+## CODE ALONG 4
 
 Given a home's condition, is it more likely to be in a particular high school district? For example, given all the homes in Excellent condition, is there a higher proportion of them in one of the three high school districts?
 
@@ -341,7 +346,7 @@ ggplot(homes) +
 
 
 
-## Continuous vs groups
+### Plotting continuous values vs groups
 
 How does the totalvalue of homes differ between elementary school districts? One way to visualize this is with a boxplot. We can do this with `geom_boxplot()`.
 
@@ -380,7 +385,7 @@ ggplot(homes) +
   coord_flip(ylim = c(0,1e6))
 ```
 
-Boxplots and violin plots obscure the total number within in each group. That's not necessarily a bad thing. Too much information in a plot can be overwhelming. However ggplot allows us to combine geoms, so we could combine a 1-dimensional scatterplot (sometimes called a "stripchart") with a boxplot or violin plot. The `position_jitter` functions adds a little random noise to data to help spread them out. 
+Boxplots and violin plots obscure the total number within in each group. That's not necessarily a bad thing. Too much information in a plot can be overwhelming. However, ggplot allows us to combine geoms, so we could combine a 1-dimensional scatterplot (sometimes called a "stripchart") with a boxplot or violin plot. The `position_jitter` functions adds a little random noise to data to help spread them out. 
 
 ```{r}
 ggplot(homes) +
@@ -392,7 +397,7 @@ ggplot(homes) +
 ```
 
 
-## Exercise 5
+## CODE ALONG 5
 
 How are the ages of homes distributed between the elementary school districts? Are there some elementary schools that serve mostly newer homes? Create a boxplot of age of home by esdistrict. 
 
@@ -405,7 +410,7 @@ ggplot(homes) +
 
 
 
-## Line plots over time
+### Line plots over time
 
 How has the median size (finsqft) of houses changed over time (yearbuilt)? It seems like homes have been getting bigger. Can we visualize how the median finsqft has changed over the years?
 
@@ -440,13 +445,13 @@ ggplot(homes_median_lotsize) +
 
 After 1950 it looks most new homes are built on small lots.
 
-We can zoom in and get more detail on the last 90 years. Notice we use the `labs()` function to add a title and customize the axis labels.
+We can zoom in and get more detail on the last 75 years (since 1950). Notice we use the `labs()` function to add a title and customize the axis labels.
 
 ```{r}
 ggplot(homes_median_lotsize) +
   aes(x = yearbuilt, y = lotsize) +
   geom_line() +
-  coord_cartesian(xlim = c(1930,2020), ylim = c(0,150)) +
+  coord_cartesian(xlim = c(1950,2025), ylim = c(0,10)) +
   labs(title = "Median Lot Size by Year Built", 
        x = "Year Built", 
        y = "Median Lot Size")
@@ -455,7 +460,7 @@ ggplot(homes_median_lotsize) +
 
 
 
-## Exercise 6
+## CODE ALONG 6
 
 How has the mean number of fullbaths in a home changed over time (yearbuilt), since 1950?
 
@@ -474,12 +479,12 @@ Create a line plot showing how the mean number of fullbaths has changed over tim
 ```{r}
 ggplot(homes_mean_fb) +
   aes(x = yearbuilt, y = fullbath) +
-  geom_point() +
+  geom_line() +
   geom_smooth()
 ```
 
 
-## Wrap up
+### Two last items
 
 We just covered the basics of ggplot2 today. The way to get better at using ggplot2 is to keep using it and Googling/ask AI for help when you get stuck.
 
@@ -498,12 +503,40 @@ ggplot(homes) +
   theme_minimal()
 ```
 
-There are whole R packages that provide nothing but more themes for ggplot2. For example, see the {ggthemes} package.
+There are whole R packages that provide nothing but more themes for ggplot2. For example, see the {ggthemes} and {ggpubr} packages. Here's an example using `theme_pubr()` from the {ggpubr} package 
 
-Saving plots can be done with the `ggsave()` function. By default, it will save the last plot you created as a 7 in. x 7 in. image.
+
+```{r}
+# install.packages("ggpubr")
+library(ggpubr)
+ggplot(homes) +
+  aes(x = esdistrict, y = lotsize) +
+  geom_point(position = position_jitter(width = 0.1, height = 0)) +
+  coord_flip(ylim = c(0,50)) +
+  theme_pubr()
+```
+
+
+Saving plots can be done with the `ggsave()` function. The file name you provide determines the type of plot saved. By default, it will save the last plot you created as a 7 in. x 7 in. image.
 
 ```{r}
 ggsave("es_lotsize.png")
+```
+
+You can also save your plot and then call `ggsave()`. Notice we can change the dimensions and units. 
+
+```{r}
+# save plot
+p <- ggplot(homes) +
+  aes(x = reorder(esdistrict, totalvalue, median), y = totalvalue) +
+  geom_boxplot() +
+  labs(x = "Elementary School District", y = "Total Home Value") +
+  scale_y_continuous(labels = dollar) +
+  coord_flip() +
+  theme_minimal()
+p
+ggsave(filename = "es_totalvalue_boxplot.jpg", plot = p, 
+       width = 20, height = 15, units = "cm")
 ```
 
 
@@ -528,6 +561,50 @@ https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf
 ## Appendix
 
 Additional material cut for time.
+
+### Move the legend
+
+To move the legend, use `+ theme(legend.position)` where the `legend position` argument take the values "none", "bottom", "left", or "top".
+
+Example:
+
+```{r}
+ggplot(homes) +
+  aes(x = finsqft, y = totalvalue, color = hsdistrict) +
+  geom_point() +
+  theme(legend.position = c(12000, 1e6))
+```
+
+To place a legend inside a plot, set `legend.position = "inside"` and then set `legend.position.inside` to relative coordinates between 0 and 1.
+
+```{r}
+ggplot(homes) +
+  aes(x = finsqft, y = totalvalue, color = hsdistrict) +
+  geom_point() +
+  theme(legend.position = "inside", 
+        legend.position.inside = c(0.85, 0.15))
+```
+
+### Rotate axis labels
+
+Recall the boxplot of totalvalue by esdistrict:
+
+```{r}
+ggplot(homes) +
+  aes(x = esdistrict, y = totalvalue) +
+  geom_boxplot()
+```
+
+We can rotate the axis labels 45 degrees to make them legible by specifying `theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))`. The angle argument can take values ranging from [0, 360]. The vjust and hjust arguments can take values ranging from [0,1]. The specify vertical and horizontal justification. Getting labels rotated and looking the way you want often takes some experimenting.
+
+```{r}
+ggplot(homes) +
+  aes(x = esdistrict, y = totalvalue) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))
+```
+
+
 
 ### Order bar charts by counts
 

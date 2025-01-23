@@ -4,10 +4,10 @@ homes$yearremodeled <- NULL
 homes$remodeled <- NULL
 homes$lastsaledate1 <- NULL
 homes$lastsaleprice <- NULL
-
+homes$month_sold <- NULL
 vars <- c("totalvalue", "finsqft", "lotsize", "bedroom", "fullbath", 
           "yearbuilt", "esdistrict", "msdistrict", "hsdistrict", 
-          "censustract", "condition", "cooling", "age", "month_sold", "fp")
+          "censustract", "condition", "cooling", "age", "fp")
 
 homes <- homes[,vars]
 
