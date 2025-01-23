@@ -62,7 +62,6 @@ Variable name definitions:
 - *condition*: assessed condition of home (Substandard, Poor, Fair, Average, Good, Excellent)
 - *cooling*: 'Central Air' versus 'No Central Air'
 - *age*: of the house in years as of 2025
-- *month_sold*: month the house was last sold
 - *fp*: indicator if house has fireplace (0=no, 1=yes)
 
 
@@ -209,7 +208,7 @@ ggplot(homes) +
 
 
 
-### Zooming in on data
+## Zooming in on data
 
 Albemarle county has homes with very large totalvalue and lotsize values. Including them in our plots means we "zoom out" to accommodate them which means we're "far away" from the majority of homes.  
 
@@ -254,7 +253,7 @@ ggplot(homes) +
 
 ```
 
-### Visualizing counts
+## Visualizing counts
 
 Recall the condition variable. We can quickly get counts of each condition using the `table()` function:
 
@@ -346,7 +345,7 @@ ggplot(homes) +
 
 
 
-### Plotting continuous values vs groups
+## Plotting continuous values vs groups
 
 How does the totalvalue of homes differ between elementary school districts? One way to visualize this is with a boxplot. We can do this with `geom_boxplot()`.
 
@@ -410,7 +409,7 @@ ggplot(homes) +
 
 
 
-### Line plots over time
+## Line plots over time
 
 How has the median size (finsqft) of houses changed over time (yearbuilt)? It seems like homes have been getting bigger. Can we visualize how the median finsqft has changed over the years?
 
@@ -484,7 +483,7 @@ ggplot(homes_mean_fb) +
 ```
 
 
-### Two last items
+## Two last items
 
 We just covered the basics of ggplot2 today. The way to get better at using ggplot2 is to keep using it and Googling/ask AI for help when you get stuck.
 
@@ -699,5 +698,73 @@ Run the following line to restore the original default options. Or you can simpl
 
 ```{r}
 options(opts)
+```
+
+
+### Plotting with two data frames 
+
+ggplot allows us to use multiple data frames when creating a plot. For example, consider the following plot totalvalue vs YearBuilt for the years 1950 - 2025 for homes valued at $1,000,000 or less. Notice we are zoomed in.
+
+```{r}
+ggplot(homes) +
+  aes(x=yearbuilt, y=totalvalue) + 
+  geom_jitter(width = 0.2, height = 0, shape=".") +
+  coord_cartesian(xlim=c(1950,2016), ylim=c(0,1e6))
+
+```
+
+Let's say we wanted to plot on top of that graph the median totalvalue by year. First we need to calculate the median by year. Here's one way to do it:
+
+
+```{r}
+homeValues <- aggregate(totalvalue ~ yearbuilt, data = homes, median)
+tail(homeValues, n = 10)
+```
+
+Each `geom_xxx()` function allows you to supply them with a separate data frame and mappings. Below notice the `geom_line()` function references the homeValues data frame and provide a different mapping to the y aesthetic. Also notice we have to swap the order of data and aesthesics.
+
+```{r}
+ggplot(homes) + 
+  aes(x=yearbuilt, y=totalvalue) + 
+  geom_jitter(width = 0.2, height = 0, shape=".") +
+  # Notice the next geom uses a new data frame
+  geom_line(aes(y = totalvalue), homeValues, 
+            color = "red") +
+  coord_cartesian(xlim=c(1950,2016), ylim=c(0,1e6)) 
+
+```
+
+Another example: Boxplot of totalvalues by middle school district, zoomed in on homes $1,000,000 or less
+
+```{r}
+ggplot(homes) +
+  aes(x = msdistrict, y = totalvalue) +
+  geom_boxplot() +
+  coord_cartesian(ylim = c(0,1e6))
+
+```
+
+
+Let's say we wanted to label the medians with the actual amount.
+
+First we calculate it. Notice we create two versions, one numeric and one formatted in dollar amounts using the dollar function from the scales package.
+
+```{r}
+homeMedians <- aggregate(totalvalue ~ msdistrict, data = homes, median)
+# add column with median value formatted as dollar amount
+homeMedians$medianValueD <- scales::dollar(homeMedians$totalvalue)
+homeMedians
+```
+
+Now we use the geom_text() function to add the amount to the boxplot. Notice  we use alpha = 1/4 to lighten the boxplot, that the label aesthetic says which data will be mapped to the text label, and that we add 25,000 to the  positioning so the label is above the median line. (that took some trial and error)
+
+```{r}
+ggplot(homes) +
+  aes(x = msdistrict, y = totalvalue) +
+  geom_boxplot(alpha = 1/4) +
+  # Notice the next geom uses a new data frame
+  geom_text(aes(label = medianValueD, y = totalvalue + 25000), homeMedians) +
+  coord_cartesian(ylim = c(0,1e6))
+
 ```
 
