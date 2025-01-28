@@ -115,11 +115,7 @@ ggplot(homes, aes(x = finsqft, y = totalvalue)) +
 
 Do younger (more recently built) homes have a tendency to be bigger than older homes? Create a scatterplot of finsqft (y-axis) versus age (x-axis). Reminder: Insert a new code chunk by pressing *Ctrl+Alt+I* (Win/Linux) or *Cmd+Option+I* (Mac). Try entering `alpha = 1/5` in `geom_point()`. What does it do?
 
-```{r}
-ggplot(homes) +
-  aes(x = age, y = finsqft) +
-  geom_point(alpha = 1/5)
-```
+
 
 
 ## More aesthetics and facets
@@ -198,14 +194,6 @@ How is totalvalue related to lotsize within each of the three high school distri
 Create a scatterplot of totalvalue (y-axis) vs lotsize (x-axis), faceted by hsdistrict. Add smooth trend lines to summarize the relationship.
 
 
-```{r}
-ggplot(homes) +
-  aes(x = lotsize, y = totalvalue) +
-  geom_point() +
-  geom_smooth() +
-  facet_wrap(~hsdistrict)
-```
-
 
 
 ## Zooming in on data
@@ -242,16 +230,7 @@ ggplot(homes) +
 
 Modify your code from Exercise 2 to zoom in on the y-axis to see home prices ranging from 0 to $1,000,000, and zoom in on the x-axis to view homes on lots ranging in size from 0 to 5 acres. Also use the dollar function to format the home prices on the y-axis.
 
-```{r}
-ggplot(homes) +
-  aes(x = lotsize, y = totalvalue) +
-  geom_point() +
-  geom_smooth() +
-  facet_wrap(~ hsdistrict) +
-  coord_cartesian(xlim = c(0,5), ylim = c(0,1e6)) +
-  scale_y_continuous(labels = dollar)
 
-```
 
 ## Visualizing counts
 
@@ -336,13 +315,6 @@ Given a home's condition, is it more likely to be in a particular high school di
 Create a bar plot of condition (condition on x-axis), filled by hsdistrict. Set `position = 'fill'` so we can visualize within each condition the proportion belonging to a high school district.
 
 
-```{r}
-ggplot(homes) +
-  aes(x = condition, fill = hsdistrict) +
-  geom_bar(position = "fill") +
-  scale_fill_brewer(palette = "Set2")
-```
-
 
 
 ## Plotting continuous values vs groups
@@ -400,12 +372,6 @@ ggplot(homes) +
 
 How are the ages of homes distributed between the elementary school districts? Are there some elementary schools that serve mostly newer homes? Create a boxplot of age of home by esdistrict. 
 
-```{r}
-ggplot(homes) +
-  aes(x = esdistrict, y = age) +
-  geom_boxplot() +
-  coord_flip()
-```
 
 
 
@@ -475,17 +441,8 @@ head(homes_mean_fb)
 Create a line plot showing how the mean number of fullbaths has changed over time (yearbuilt). Try adding a smooth trend line using `geom_smooth()`.
 
 
-```{r}
-ggplot(homes_mean_fb) +
-  aes(x = yearbuilt, y = fullbath) +
-  geom_line() +
-  geom_smooth()
-```
-
 
 ## Two last items
-
-We just covered the basics of ggplot2 today. The way to get better at using ggplot2 is to keep using it and Googling/ask AI for help when you get stuck.
 
 Two more topics worth mentioning:
 
@@ -544,17 +501,21 @@ When working in an R script (as opposed to an Rmd file), plots appear in the Plo
 
 ## We're done!
 
+We just covered the basics of ggplot2 today. The way to get better at using ggplot2 is to keep using it and Googling/ask AI for help when you get stuck.
+
 If you would like to talk more about ggplot2 or anything else statistics related, I would love to hear from you: `clayford@virginia.edu` or `statlab@virginia.edu`
 
 
 ## References 
 
-* Wickham, H. (2016), _ggplot2: Elegant Graphics for Data Analysis_ (3rd ed), Springer. [https://ggplot2-book.org/](https://ggplot2-book.org/) 
+- "GIS Data | Albemarle County, VA." (2025) Albemarle.org. <https://www.albemarle.org/government/information-technology/geographic-information-system-gis-mapping/gis-data>.
 
-* Wickham, H. and Grolemund G. (2017), _R for Data Science_. O'Reilly. [http://r4ds.had.co.nz/](http://r4ds.had.co.nz/)
+- Wickham, H. (2016), _ggplot2: Elegant Graphics for Data Analysis_ (3rd ed), Springer. [https://ggplot2-book.org/](https://ggplot2-book.org/) 
 
-**ggplot2 cheat sheet**    
-https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf
+- Wickham, H. and Grolemund G. (2017), _R for Data Science_. O'Reilly. [http://r4ds.had.co.nz/](http://r4ds.had.co.nz/)
+
+- ggplot2 cheat sheet: 
+<https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf>
 
 
 ## Appendix
@@ -767,4 +728,71 @@ ggplot(homes) +
   coord_cartesian(ylim = c(0,1e6))
 
 ```
+
+### plotting functions in ggplot2
+
+At the opening of the workshop I drew a parabola with base R code:
+
+```{r}
+x <- seq(-1, 1, by = 0.01)
+y <- x^2
+plot(x, y, type = "l")
+```
+
+Here's how to do the same with {ggplot2}. Notice we need to define the limits of the x-axis first. Then we use `geom_function()` to define the function.
+
+```{r}
+ggplot() +
+  xlim(c(-1,1)) +
+  geom_function(fun = function(x)x^2)
+```
+
+Here's how to plot a standard normal curve. We use the `dnorm()` function without the parentheses.
+
+```{r}
+ggplot() +
+  xlim(c(-3,3)) +
+  geom_function(fun = dnorm)
+
+```
+
+Here's how to plot a sin function.
+
+```{r}
+ggplot() +
+  xlim(c(-3*pi,3*pi)) +
+  geom_function(fun = sin)
+
+```
+
+
+### Adding error bars to plots
+
+Below we model mpg as a function of cyl using the mtcars dataset that comes with R. This is basically a one-way ANOVA. Once we fit our model, we use the {emmeans} package to estimate mean mpg values per cylinder level. Notice it returns lower and upper values of a 95% confidence interval.
+
+```{r}
+mtcars$cyl <- factor(mtcars$cyl)
+m <- lm(mpg ~ cyl, data = mtcars)
+library(emmeans)
+emmeans(m, specs = "cyl")
+```
+
+We can convert that output to a data frame using the `as.data.frame()` function.
+
+```{r}
+ci_df <- as.data.frame(emmeans(m, specs = "cyl"))
+ci_df
+```
+
+Now we can create the plot using the `geom_point()` and `geom_errorbar()` functions. Notice we need to specify `ymin` and `ymax` aesthetics for the `geom_errorbar()` function.
+
+```{r}
+ggplot(ci_df) +
+  aes(x = cyl, y = emmean, ymin = lower.CL, ymax = upper.CL) +
+  geom_point() +
+  geom_errorbar(width = 0.1) +
+  labs(y = "Estimated MPG", x = "Cylinder", 
+       title = "95% Confidence Intervals of Estimated MPG by Cylinder")
+```
+
 
