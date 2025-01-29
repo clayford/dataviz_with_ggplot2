@@ -613,54 +613,6 @@ ggplot(count_df) +
   xlab("condition")
 ```
 
-### Change default color palette
-
-If you want to change the color palette so you don't have to repeatedly use `scale_color_manual()` or `scale_fill_brewer()` in your code, you can set ggplot2 options using the `options()` function. These steps come from the following Stack Overflow answer: <https://stackoverflow.com/a/68205270/2765195>
-
-Let's say you want to use the "Set2" palette from the {RColorBrewer} package any time you map a categorical variable to a color or fill scale.
-
-```{r}
-opts <- options()  # save old options
-
-# definie new scale functions with your palette of choice
-scale_colour_brewer2 <- function(...) {
-  scale_colour_brewer(..., palette = "Set2")
-}
-
-scale_fill_brewer2 <- function(...) {
-  scale_fill_brewer(..., palette = "Set2")
-}
-
-# set the options
-options(
-  ggplot2.discrete.colour = scale_colour_brewer2,
-  ggplot2.discrete.fill = scale_fill_brewer2
-)
-```
-
-Now the "Set2" color palette is the default palette for the color scale.
-
-```{r}
-ggplot(homes) +
-  aes(x = finsqft, y = totalvalue, color = cooling) +
-  geom_point() 
-
-```
-
-And it's the default palette for the fill scale. 
-
-```{r}
-ggplot(homes) +
-  aes(x = condition, fill = hsdistrict) +
-  geom_bar(position = "fill") 
-```
-
-Run the following line to restore the original default options. Or you can simply restart R.
-
-```{r}
-options(opts)
-```
-
 
 ### Plotting with two data frames 
 
@@ -795,4 +747,51 @@ ggplot(ci_df) +
        title = "95% Confidence Intervals of Estimated MPG by Cylinder")
 ```
 
+### Change default color palette
+
+If you want to change the color palette so you don't have to repeatedly use `scale_color_manual()` or `scale_fill_brewer()` in your code, you can set ggplot2 options using the `options()` function. These steps come from the following Stack Overflow answer: <https://stackoverflow.com/a/68205270/2765195>
+
+Let's say you want to use the "Set2" palette from the {RColorBrewer} package any time you map a categorical variable to a color or fill scale.
+
+```{r}
+opts <- options()  # save old options
+
+# definie new scale functions with your palette of choice
+scale_colour_brewer2 <- function(...) {
+  scale_colour_brewer(..., palette = "Set2")
+}
+
+scale_fill_brewer2 <- function(...) {
+  scale_fill_brewer(..., palette = "Set2")
+}
+
+# set the options
+options(
+  ggplot2.discrete.colour = scale_colour_brewer2,
+  ggplot2.discrete.fill = scale_fill_brewer2
+)
+```
+
+Now the "Set2" color palette is the default palette for the color scale.
+
+```{r}
+ggplot(homes) +
+  aes(x = finsqft, y = totalvalue, color = cooling) +
+  geom_point() 
+
+```
+
+And it's the default palette for the fill scale. 
+
+```{r}
+ggplot(homes) +
+  aes(x = condition, fill = hsdistrict) +
+  geom_bar(position = "fill") 
+```
+
+Run the following line to restore the original default options. Or you can simply restart R.
+
+```{r}
+options(opts)
+```
 
